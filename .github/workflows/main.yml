@@ -1,19 +1,24 @@
-FROM node:lts-buster
+name: XEON-XMD Deploy
 
-RUN apt-get update && \
-  apt-get install -y \
-  ffmpeg \
-  imagemagick \
-  webp && \
-  apt-get upgrade -y && \
-  rm -rf /var/lib/apt/lists/*
+on:
+  push:
+    branches: [main]
 
-COPY package.json .
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
 
-RUN npm install && npm install -g qrcode-terminal pm2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-COPY . .
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
 
-EXPOSE 3000
+    - name: Install dependencies
+      run: npm install
 
-CMD ["npm", "start"]
+    - name: Start the bot
+      run: npm start
